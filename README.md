@@ -1,2 +1,7 @@
 # biquaternion
-made ml in prod homeworks
+MADE
+course ml in prod
+homeworks
+
+user link on the MADE portal
+https://data.mail.ru/profile/d.klyostov/
