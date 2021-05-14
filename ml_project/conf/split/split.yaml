@@ -1,0 +1,5 @@
+# @package _group_
+name: "simple_split"
+validation_size: 0.2
+test_size: 0.2
+random_state: ${common.random_seed}
