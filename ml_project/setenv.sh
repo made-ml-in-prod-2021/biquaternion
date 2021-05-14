@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 export PROJECT_ROOT=$PWD
-echo $PROJECT_ROOT
+export PYTHONPATH=$PROJECT_ROOT
 
-#source ~/.bashrc
+echo $PROJECT_ROOT
