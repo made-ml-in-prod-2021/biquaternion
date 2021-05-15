@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 from src.config import SplitConfig
 from typing import Tuple
 
+DEFAULT_TARGET_NAME = 'target'
+
 
 def split_dataset(src_df: pd.DataFrame,
                   split_config: SplitConfig) -> Tuple[pd.DataFrame,
@@ -21,9 +23,9 @@ def split_dataset(src_df: pd.DataFrame,
 
 
 def extract_target(src_df: pd.DataFrame,
-                   target_name: str) -> Tuple[pd.DataFrame,
-                                              pd.Series]:
-    features = src_df.loc[:, src_df.columns != target_name]
+                   target_name: str = DEFAULT_TARGET_NAME) -> Tuple[pd.DataFrame,
+                                                                    pd.Series]:
+    features = src_df.drop(target_name, axis=1)
     target = src_df[target_name]
     return features, target
 
