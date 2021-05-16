@@ -53,10 +53,12 @@ def save_report(model: BaseEstimator,
                 metrics: dict,
                 project_root: Path) -> None:
     logger.info('start report saving')
-    output_path = project_root / 'reports' / datetime.now().strftime('%d_%m_%Y_%H_%M_%S')
+
+    output_path = project_root / cfg.common.reports_path / datetime.now().strftime('%d_%m_%Y_%H_%M_%S')
     output_path.mkdir(parents=True, exist_ok=True)
     logger.debug(f'output_path: {str(output_path)}')
-    models_path = project_root / 'models'
+    models_path = project_root / cfg.common.models_path
+    models_path.mkdir(parents=True, exist_ok=True)
     logger.debug(f'models_path: {str(models_path)}')
     metrics_filename = output_path / 'metrics.yaml'
     logger.debug(f'metrics_filename: {str(metrics_filename)}')
@@ -78,7 +80,7 @@ def save_report(model: BaseEstimator,
 
 
 @hydra.main(config_path='../../conf', config_name='config')
-def main(cfg: Config):
+def train_pipeline(cfg: Config):
     logger.info('start training pipeline')
     logger.debug(f'config: {OmegaConf.to_yaml(cfg)}')
     dataset_path = PROJECT_ROOT / cfg.dataset.raw_dir_path / cfg.dataset.dataset_filename
@@ -123,4 +125,4 @@ def main(cfg: Config):
 
 
 if __name__ == '__main__':
-    main()
+    train_pipeline()
