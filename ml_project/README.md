@@ -21,6 +21,23 @@
     source .venv/bin/activate
     pip install -r requirements.txt
 
+## Перед началом работы
+нужно выполнить скрипт `setenv.sh`
+следующей командой
+
+    source setenv.sh
+
+В результате установится переменная PROJECT_ROOT, которая 
+используется в дальнейшем, и создадутся папки 
+`logs`, `reports` и `output`
+
+## Подготовка датасета
+Необходимо скачать датасет с помощью следующих команды
+
+    cd src/data
+    ./retrieve_data
+    cd -
+
 ## Конфигурация
 
 Для настройки проекта используется [hydra](https://hydra.cc/). 
@@ -52,6 +69,67 @@
 
 ## Тестирование
 
-Производится командой
-
     pytest
+
+## Структура проекта
+    .
+    ├── conf
+    │   ├── common
+    │   │   └── common_config.yaml
+    │   ├── dataset
+    │   │   └── dataset.yaml                
+    │   ├── model
+    │   │   ├── decision_tree.yaml
+    │   │   ├── linear_svc.yaml
+    │   │   ├── logistic_regression.yaml
+    │   │   └── perceptron.yaml
+    │   ├── split
+    │   │   └── split.yaml
+    │   └── config.yaml
+    │   ├── logging.conf
+    ├── data
+    │    ├── external
+    │    │    └── heart-disease-uci.zip
+    │    └── raw
+    │        └── heart.csv
+    ├── logs
+    │    └── debug.log
+    │    └── error.log
+    ├── models
+    │    └── latest_model.pickle -> symlink to latest model.pickle
+    ├── notebooks
+    │    └── EDA.ipynb
+    ├── output
+    │    └── predictions.csv
+    ├── reports
+    │    └── 16_05_2021_21_52_38
+    │        ├── config.yaml
+    │        ├── metrics.yaml
+    │        └── model.pickle
+    ├── requirements.txt
+    ├── setenv.sh
+    ├── src
+    │    ├── common
+    │    │    ├── __init__.py
+    │    │    └── timing.py
+    │    ├── config
+    │    │    ├── common_config.py
+    │    │    ├── config.py
+    │    │    ├── data_config.py
+    │    │    ├── __init__.py
+    │    │    └── model_config.py
+    │    ├── data
+    │    │    ├── __init__.py
+    │    │    ├── prepare_dataset.py
+    │    │    └── retrieve_data.sh
+    │    └── models
+    │        ├── predict.py
+    │        └── train_model.py
+    └── tests
+        ├── data
+        │    ├── __init__.py
+        │    └── test_dataset.py
+        ├── __init__.py
+        └── models
+            ├── __init__.py
+            └── test_models.py
