@@ -8,3 +8,4 @@ echo $PROJECT_ROOT
 mkdir logs
 mkdir reports
 mkdir output
+
