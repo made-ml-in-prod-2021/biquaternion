@@ -40,8 +40,11 @@ def config(tests_sandbox_path) -> Config:
 
 
 @pytest.fixture
-def dataset(path: Union[Path, str]) -> pd.DataFrame:
-    return pd.read_csv(path)
+def dataset(config: Config) -> pd.DataFrame:
+    raw_dir_path = config.dataset.raw_dir_path
+    dataset_filename = config.dataset.dataset_filename
+    dataset_path = Path(raw_dir_path) / dataset_filename
+    return pd.read_csv(dataset_path)
 
 
 @pytest.fixture
@@ -64,7 +67,6 @@ def test_models(model, dataset, config: Config):
         assert metrics['accuracy'] > 0.0
     preds = predict(model, dataset)
     assert isinstance(preds, pd.Series)
-
 
 
 if __name__ == '__main__':
