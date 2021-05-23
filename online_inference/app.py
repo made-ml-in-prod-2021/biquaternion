@@ -22,7 +22,7 @@ PROJECT_ROOT = Path(PROJECT_ROOT)
 MODEL_PATH = PROJECT_ROOT / 'models' / 'model.pickle'
 
 # logging.config.fileConfig(PROJECT_ROOT / 'conf/logging.conf')
-logger = logging.getLogger('onlineInferenceService.service')
+logger = logging.getLogger('onlineInferenceService.app')
 
 
 def load_object(src_path: Union[str, Path]) -> BaseEstimator:
@@ -32,7 +32,7 @@ def load_object(src_path: Union[str, Path]) -> BaseEstimator:
 
 class InputParamsModel(BaseModel):
     data: List[conlist(Union[int, float, None], min_items=13, max_items=13)]
-    features: List[str]
+    features: conlist(str, min_items=13, max_items=13)
 
 
 class HeartDiseaseResponse(BaseModel):
@@ -82,7 +82,7 @@ def load_model():
         logger.info('model loading succeeded')
 
 
-@app.get('/predict/', response_model=HeartDiseaseResponse)
+@app.get('/predict/', response_model=List[HeartDiseaseResponse])
 async def call_predict(request: InputParamsModel, threshold=0.5):
     global model
     if model is not None:
@@ -90,9 +90,9 @@ async def call_predict(request: InputParamsModel, threshold=0.5):
         return predict(request.data, request.features, model, threshold=threshold)
     else:
         logger.error('model is None')
-        return HeartDiseaseResponse(score=-1.0, decision=-1, human_readable='unknown (error: model is None)')
+        return [HeartDiseaseResponse(score=-1.0, decision=-1, human_readable='unknown (error: model is None)')]
 
 
 if __name__ == '__main__':
     logger.info('start service')
-    uvicorn.run("service:app", host='0.0.0.0', port=os.getenv('PORT', 8000))
+    uvicorn.run("app:app", host='0.0.0.0', port=os.getenv('PORT', 8000))
