@@ -1,0 +1,4 @@
+# @package _group_
+raw_dir_path: data/raw
+processed_dir_path: data/processed
+dataset_filename: heart.csv

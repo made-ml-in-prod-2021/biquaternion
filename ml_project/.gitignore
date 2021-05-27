@@ -1,0 +1,11 @@
+__pycache__/
+*.pytest_cache
+logs
+output
+outputs
+reports
+sandbox
+notebooks/.ipynb_checkpoints
+.venv
+*.pickle
+*.log

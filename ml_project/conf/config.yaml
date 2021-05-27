@@ -1,0 +1,5 @@
+defaults:
+  - model: decision_tree
+  - dataset: dataset
+  - split: split
+  - common: common_config

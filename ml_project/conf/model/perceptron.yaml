@@ -1,0 +1,14 @@
+# @package _group_
+_target_: sklearn.neural_network.MLPClassifier
+hidden_layer_sizes: [64, 200, 64]
+activation: "logistic"
+alpha: 1e-4
+batch_size: 64
+learning_rate_init: 1e-2
+max_iter: 10000
+shuffle: True
+random_state: ${common.random_seed}
+tol: 1e-3
+momentum: 0.9
+early_stopping: True
+n_iter_no_change: 10

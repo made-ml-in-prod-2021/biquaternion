@@ -1,0 +1,6 @@
+# @package _group_
+_target_: sklearn.svm.LinearSVC
+tol: 1e-3
+C: 0.8
+random_state: ${common.random_seed}
+max_iter: 10000
