@@ -110,11 +110,11 @@ def _val(name_date_template, **context):
     roc_path = Path(MODELS_DIR_PATH) / name_date_template / 'roc_auc.txt'
     roc_auc = roc_auc_score(y_val, y_pred)
     logger.info(f'achieved ROC AUC: {roc_auc}')
-    with open(roc_path, 'r') as f:
+    with open(roc_path, 'w') as f:
         fpr, tpr, thr = roc_curve(y_val, y_pred)
         f.write(str(roc_auc))
         f.write(f'fpr:\n{fpr}\ntpr\n{tpr}\nthresholds\n{thr}')
-    context['task_instance'].xcom_push(key='latest_roc', value=str(roc_path))
+    context['task_instance'].xcom_push(key='latest_roc_path', value=str(roc_path))
 
 
 with DAG(dag_id='train_dag',
@@ -135,5 +135,5 @@ with DAG(dag_id='train_dag',
 
     wait_0 >> preprocess >> wait_1 >> split >> wait_2 >> train >> wait_3 >> val
 
-if __name__ == '__main__':
-    _train('abc')
+# if __name__ == '__main__':
+#     _train('abc')
