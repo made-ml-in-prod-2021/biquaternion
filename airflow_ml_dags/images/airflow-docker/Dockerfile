@@ -3,6 +3,7 @@ FROM ${AIRFLOW_BASE_IMAGE}
 
 RUN pip install --user --no-cache-dir \
     apache-airflow-providers-docker==1.2.0
+RUN pip install scikit-learn
 
 USER root
 ENV PYTHONPATH=/home/airflow/.local/lib/python3.6/site-packages

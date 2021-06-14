@@ -13,7 +13,7 @@ from airflow.utils.dates import days_ago
 
 import pandas as pd
 
-logger = logging.getLogger('generate_data_DAG')
+logger = logging.getLogger('retrieve_data_DAG')
 
 default_args = {
     "owner": "airflow",
@@ -69,18 +69,20 @@ def _generate_csv(amount: int,
     else:
         logger.error('generate policy is only implemented')
     output_path = output_dir / RECEIVED_DATA_FILENAME
-    context["task_instance"].xcom_push(key="latest_data_path", value=str(output_path))
+    context['task_instance'].xcom_push(key='latest_data_path', value=str(output_path))
     logger.debug(f'saving retrieved data to {output_path}')
     df.to_csv(output_path, float_format='%.3f', index=False)
 
 
 def _wait_for_file(**context):
-    latest_data_path = context["task_instance"].xcom_pull(task_ids="generate_csv",
-                                                          key="latest_data_path")
+    logger.info('waiting')
+    latest_data_path = context['task_instance'].xcom_pull(task_ids='generate_csv',
+                                                          key='latest_data_path')
     return Path(latest_data_path).exists()
 
 
 def _merge_data(**context):
+    logger.info('merging')
     latest_data_path = context["task_instance"].xcom_pull(task_ids="generate_csv",
                                                           key="latest_data_path")
     dst_data_path = Path(RAW_DATA_PATH) / FINAL_DATA_FILENAME
