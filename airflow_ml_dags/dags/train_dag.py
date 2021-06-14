@@ -31,6 +31,7 @@ VAL_DATA_FILENAME = 'val.csv'
 
 MODELS_DIR_PATH = PROJECT_ROOT / 'models'
 MODEL_FILENAME = 'model.dat'
+METRICS_FILENAME = 'roc_auc.txt'
 
 TRAIN_VAL_RATIO = 4  # train : val    4 : 1
 
@@ -107,14 +108,33 @@ def _val(name_date_template, **context):
     with open(latest_model_path, 'rb') as f:
         model = pickle.load(f)
     y_pred = model.predict(x_val)
-    roc_path = Path(MODELS_DIR_PATH) / name_date_template / 'roc_auc.txt'
+    roc_path = Path(MODELS_DIR_PATH) / name_date_template / METRICS_FILENAME
     roc_auc = roc_auc_score(y_val, y_pred)
     logger.info(f'achieved ROC AUC: {roc_auc}')
     with open(roc_path, 'w') as f:
         fpr, tpr, thr = roc_curve(y_val, y_pred)
         f.write(str(roc_auc))
-        f.write(f'fpr:\n{fpr}\ntpr\n{tpr}\nthresholds\n{thr}')
-    context['task_instance'].xcom_push(key='latest_roc_path', value=str(roc_path))
+        f.write(f'fpr:\n{fpr}\ntpr\n{tpr}\nthresholds\n{thr}\n')
+    context['task_instance'].xcom_push(key='latest_metrics_path', value=str(roc_path))
+
+
+def _wait_4(**context):
+    logger.info('waiting for validation')
+    latest_metrics_path = context['task_instance'].xcom_pull(task_ids='val', key='latest_metrics_path')
+    return Path(latest_metrics_path).exists()
+
+
+def _postprocess(**context):
+    model_path = context['task_instance'].xcom_pull(task_ids='train', key='latest_model_path')
+    metrics_path = context['task_instance'].xcom_pull(task_ids='val', key='latest_metrics_path')
+    model_path = Path(model_path)
+    metrics_path = Path(metrics_path)
+    latest_model_dir = Path(MODELS_DIR_PATH) / 'latest'
+    latest_model_dir.mkdir(parents=True, exist_ok=True)
+    latest_model_path = latest_model_dir / MODEL_FILENAME
+    latest_metrics_path = latest_model_dir / METRICS_FILENAME
+    shutil.copy(model_path, latest_model_path)
+    shutil.copy(metrics_path, latest_metrics_path)
 
 
 with DAG(dag_id='train_dag',
@@ -132,8 +152,8 @@ with DAG(dag_id='train_dag',
     val = PythonOperator(task_id='val',
                          python_callable=_val,
                          op_kwargs={'name_date_template': '{{ ds }}'})
+    wait_4 = PythonSensor(task_id='wait_4', python_callable=_wait_4)
+    postprocess = PythonOperator(task_id='postprocess',
+                                 python_callable=_postprocess)
 
-    wait_0 >> preprocess >> wait_1 >> split >> wait_2 >> train >> wait_3 >> val
-
-# if __name__ == '__main__':
-#     _train('abc')
+    wait_0 >> preprocess >> wait_1 >> split >> wait_2 >> train >> wait_3 >> val >> wait_4 >> postprocess
