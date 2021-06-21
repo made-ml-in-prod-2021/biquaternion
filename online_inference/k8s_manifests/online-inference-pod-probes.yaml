@@ -7,6 +7,7 @@ metadata:
 spec:
   containers:
     - image: biquaternion/online_inference:v2
+      imagePullPolicy: Always
       name: online-inference
       ports:
         - name: readiness-port
@@ -22,6 +23,6 @@ spec:
         httpGet:
           path: /health
           port: readiness-port
-        failureThreshold: 1
+        initialDelaySeconds: 60
         periodSeconds: 10
 

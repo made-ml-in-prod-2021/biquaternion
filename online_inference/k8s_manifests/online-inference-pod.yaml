@@ -7,7 +7,9 @@ metadata:
 spec:
   containers:
     - image: biquaternion/online_inference:v2
+      imagePullPolicy: Always
       name: online-inference
       ports:
         - containerPort: 8000
+          hostPort: 8000
 
