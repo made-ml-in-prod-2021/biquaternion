@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import pickle
+import time
 from pathlib import Path
 from typing import Union, List, Optional
 
@@ -42,6 +43,9 @@ class HeartDiseaseResponse(BaseModel):
 
 
 model: Optional[BaseEstimator] = None
+startup_ts = 0
+LIFETIME = 20
+STARTUP_TIME = 10
 
 
 def predict(data: List,
@@ -67,11 +71,17 @@ def main():
 
 @app.get('/health')
 def main():
+    global startup_ts
+    if time.time() - startup_ts > LIFETIME:
+        raise OSError
     return model is not None
 
 
 @app.on_event('startup')
 def load_model():
+    global startup_ts
+    startup_ts = time.time()
+    time.sleep(STARTUP_TIME)
     global model
     model_path = MODEL_PATH
     logger.info('loading model')
