@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: online-inference
+  labels:
+    app: online-inference
+spec:
+  containers:
+    - image: biquaternion/online_inference:v2
+      imagePullPolicy: Always
+      name: online-inference
+      ports:
+        - containerPort: 8000
+          hostPort: 8000
+

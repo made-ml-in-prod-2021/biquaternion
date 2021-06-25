@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: online-inference
+  labels:
+    app: online-inference
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: instance
+  template:
+    metadata:
+      labels:
+        app: instance
+    spec:
+      containers:
+        - image: biquaternion/online_inference:v2
+          imagePullPolicy: Always
+          name: online-inference
+          ports:
+            - containerPort: 8000
+              hostPort: 8000
+

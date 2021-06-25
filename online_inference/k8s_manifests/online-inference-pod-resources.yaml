@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: online-inference-resources
+  labels:
+    app: online-inference
+spec:
+  containers:
+    - image: biquaternion/online_inference:v2
+      imagePullPolicy: Always
+      name: online-inference
+      ports:
+        - containerPort: 8000
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 8000
+        initialDelaySeconds: 15
+        periodSeconds: 3
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "100m"
+        limits:
+          memory: "64Mi"
+          cpu: "250m"
+
